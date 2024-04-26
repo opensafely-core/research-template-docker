@@ -17,3 +17,7 @@ source <(just --completions bash)
 # Show all available commands
 just #  shortcut for just --list
 ```
+
+## Build instructions
+
+Run `just build` to build the Docker image.
