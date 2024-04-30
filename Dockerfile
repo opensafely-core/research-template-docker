@@ -8,6 +8,10 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean
 
 # Install python 3.10. This is the version used by the python-docker 
 # image, used for analyses using the OpenSAFELY pipeline.
+#
+# DL3042: we always want latest package versions when we rebuild
+# DL3013: using an apt cache on the host instead
+# hadolint ignore=DL3042,DL3013
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN --mount=type=cache,target=/var/cache/apt \
     echo "deb http://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu focal main" > /etc/apt/sources.list.d/deadsnakes-ppa.list &&\
@@ -24,9 +28,17 @@ RUN --mount=type=cache,target=/var/cache/apt \
 RUN --mount=type=cache,target=/cache,id=/cache-2004 R -e 'install.packages("renv", destdir="/cache"); renv::init(bare = TRUE)'
 
 # copy the renv directory from the OpenSAFELY R action image
+#
+# DL3022: hadolint can't access a network and doesn't behave
+# as expected when a reference is made to an external image.
+# hadolint ignore=DL3022
 COPY --from=ghcr.io/opensafely-core/r /renv/ /renv/
 
 # Copy the Python virtualenv from OpenSAFELY Python action image
+#
+# DL3022: hadolint can't access a network and doesn't behave
+# as expected when a reference is made to an external image.
+# hadolint ignore=DL3022
 COPY --from=ghcr.io/opensafely-core/python:v2 /opt/venv /opt/venv
 
 # Create a local user and give it sudo (aka root) permissions

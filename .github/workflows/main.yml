@@ -21,7 +21,6 @@ jobs:
         # Lint the dockerfile before building
         with:
           failure-threshold: error
-          ignore: DL3022, DL3008, DL3009
       - uses: "opensafely-core/setup-action@v1"
         with:
           install-just: true
