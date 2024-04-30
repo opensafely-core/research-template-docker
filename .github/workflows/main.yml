@@ -42,7 +42,7 @@ jobs:
             path: /tmp/research-template.tar.gz
 
   publish:
-    needs: [build]
+    needs: [build-and-test]
 
     runs-on: ubuntu-22.04
 
