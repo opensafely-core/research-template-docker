@@ -6,3 +6,6 @@ default:
 
 build:
     docker build .
+
+smoke-test:
+    docker run --rm research-template ls /opt/venv/bin/python3.10

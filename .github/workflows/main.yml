@@ -13,7 +13,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +27,9 @@ jobs:
 
       - name: Build docker image
         run: just build
+
+      - name: Test docker image
+        run: just smoke-test
 
       - name: Save docker image
         run: |
