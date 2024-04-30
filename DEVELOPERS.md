@@ -18,17 +18,6 @@ source <(just --completions bash)
 just #  shortcut for just --list
 ```
 
+## Build instructions
 
-## Local development environment
-
-
-Set up a local development environment with:
-```
-just dev_setup
-```
-
-## Tests
-Run the tests with:
-```
-just test <args>
-```
+Run `just build` to build the Docker image.

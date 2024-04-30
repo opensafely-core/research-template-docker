@@ -1,40 +1,74 @@
 ---
 name: CI
 
+env:
+  IMAGE_NAME: research-template
+  PUBLIC_IMAGE_NAME: ghcr.io/opensafely/research-template
+  REGISTRY: ghcr.io
+
 on:
+  workflow_dispatch:
+  pull_request:
   push:
+    branches: [main]
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: "opensafely-core/setup-action@v1"
-        with:
-          python-version: "3.11"
-          install-just: true
-      - name: Check formatting, linting and import sorting
-        run: just check
-
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: "opensafely-core/setup-action@v1"
-        with:
-          python-version: "3.11"
-          install-just: true
-      - name: Run tests
-#       env:  # Add environment variables required for tests
-        run: |
-          just test
-
-  lint-dockerfile:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf  # v3.1.0
+        # Lint the dockerfile before building
         with:
           failure-threshold: error
+      - uses: "opensafely-core/setup-action@v1"
+        with:
+          install-just: true
+
+      - name: Build docker image
+        run: just build
+
+      - name: Test docker image
+        run: just smoke-test
+
+      - name: Save docker image
+        run: |
+          docker save research-template | gzip > /tmp/research-template.tar.gz
+
+      - name: Upload docker image
+        uses: actions/upload-artifact@v4
+        with:
+            name: research-template-image
+            path: /tmp/research-template.tar.gz
+
+  publish:
+    needs: [build]
+
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: read
+      packages: write
+
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: "opensafely-core/setup-action@v1"
+        with:
+          install-just: true
+
+      - name: Download docker image
+        uses: actions/download-artifact@v4
+        with:
+            name: research-template-image
+            path: /tmp/image
+
+      - name: Import docker image
+        run: gunzip -c /tmp/image/research-template.tar.gz | docker load
+
+      - name: Publish image
+        run: |
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
+            docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:latest
+            docker push $PUBLIC_IMAGE_NAME:latest
