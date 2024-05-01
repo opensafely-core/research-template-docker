@@ -24,15 +24,15 @@ RUN --mount=type=cache,target=/var/cache/apt \
     rm /usr/bin/python3 &&\
     ln -s /usr/bin/python3.10 /usr/bin/python3
 
-# install renv
-RUN --mount=type=cache,target=/cache,id=/cache-2004 R -e 'install.packages("renv", destdir="/cache"); renv::init(bare = TRUE)'
+# Remove the packages shipped with the rocker image
+RUN rm -rf /usr/library/lib/R/site-library/*
 
-# copy the renv directory from the OpenSAFELY R action image
+# copy the renv directory into the local site library from the OpenSAFELY R action image
 #
 # DL3022: hadolint can't access a network and doesn't behave
 # as expected when a reference is made to an external image.
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/opensafely-core/r /renv/ /renv/
+COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:latest /renv/lib/R-4.0/x86_64-pc-linux-gnu/ /usr/local/lib/R/site-library
 
 # Copy the Python virtualenv from OpenSAFELY Python action image
 #
