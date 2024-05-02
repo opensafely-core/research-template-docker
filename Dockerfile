@@ -34,6 +34,9 @@ RUN rm -rf /usr/library/lib/R/site-library/*
 # hadolint ignore=DL3022
 COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:latest /renv/lib/R-4.0/x86_64-pc-linux-gnu/ /usr/local/lib/R/site-library
 
+# Configure RStudio Server to run without auth
+RUN echo "auth-none=1" >> /etc/rstudio/rserver.conf && echo "USER=rstudio" >> /etc/environment
+
 # Copy the Python virtualenv from OpenSAFELY Python action image
 #
 # DL3022: hadolint can't access a network and doesn't behave
