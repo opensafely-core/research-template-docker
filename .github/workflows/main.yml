@@ -67,7 +67,7 @@ jobs:
             path: /tmp/image
 
       - name: Import docker image
-        run: gunzip -c /tmp/image/research-template.tar.gz | docker load
+        run: docker load --input /tmp/image/research-template.tar.gz
 
       - name: Publish image
         run: |
