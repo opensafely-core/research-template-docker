@@ -42,7 +42,10 @@ RUN echo "auth-none=1" >> /etc/rstudio/rserver.conf && echo "USER=rstudio" >> /e
 # DL3022: hadolint can't access a network and doesn't behave
 # as expected when a reference is made to an external image.
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/opensafely-core/python:v2 /opt/venv /opt/venv
+COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/python:v2 /opt/venv /opt/venv
+
+# Create a fake system Python pointing at venv python
+RUN  echo 'exec /opt/venv/bin/python3.10 "$@"' > /usr/bin/python
 
 # Create a local user and give it sudo (aka root) permissions
 RUN usermod -aG sudo rstudio &&\
