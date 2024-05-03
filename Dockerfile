@@ -33,19 +33,19 @@ RUN --mount=type=cache,target=/var/cache/apt \
     usermod -aG sudo rstudio &&\
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# copy the renv directory into the local site library from the OpenSAFELY R action image
-#
-# DL3022: hadolint can't access a network and doesn't behave
-# as expected when a reference is made to an external image.
-# hadolint ignore=DL3022
-COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:latest /renv/lib/R-4.0/x86_64-pc-linux-gnu/ /usr/local/lib/R/site-library
-
 # Copy the Python virtualenv from OpenSAFELY Python action image
 #
 # DL3022: hadolint can't access a network and doesn't behave
 # as expected when a reference is made to an external image.
 # hadolint ignore=DL3022
 COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/python:v2 /opt/venv /opt/venv
+
+# copy the renv directory into the local site library from the OpenSAFELY R action image
+#
+# DL3022: hadolint can't access a network and doesn't behave
+# as expected when a reference is made to an external image.
+# hadolint ignore=DL3022
+COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:latest /renv/lib/R-4.0/x86_64-pc-linux-gnu/ /usr/local/lib/R/site-library
 
 # Required for installing opensafely cli
 ENV PATH="/home/rstudio/.local/bin:${PATH}"
