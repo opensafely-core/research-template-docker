@@ -3,7 +3,7 @@ name: CI
 
 env:
   IMAGE_NAME: research-template
-  PUBLIC_IMAGE_NAME: ghcr.io/opensafely/research-template
+  PUBLIC_IMAGE_NAME: ghcr.io/opensafely-core/research-template
   REGISTRY: ghcr.io
 
 on:
