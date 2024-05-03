@@ -45,8 +45,40 @@ jobs:
             # Disable compression; the file is already compressed
             compression-level: 0
 
-  publish:
+  test-devcontainer:
     needs: [build-and-test]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Docker image
+      uses: actions/download-artifact@v4
+      with:
+        name: research-template-image
+        path: /tmp/image
+
+    - name: Import Docker image
+      run: docker load --input /tmp/image/research-template.tar.gz
+
+    - name: Tag Docker image for use with dev container
+      run: docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:v0
+
+    - name: Checkout research template temporary devcontainer dev branch
+      uses: actions/checkout@v4
+      with:
+        repository: opensafely/research-template
+
+    - name: Checkout research-template-docker repository in subdirectory
+      uses: actions/checkout@v4
+      with:
+        path: 'research-template/research-template-docker'
+
+    - name: Build and run dev container task
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: ./research-template/research-template-docker/tests/dev_container.sh
+
+  publish:
+    needs: [build-and-test, test-devcontainer]
 
     runs-on: ubuntu-latest
 
