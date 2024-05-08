@@ -22,8 +22,10 @@ RUN --mount=type=cache,target=/var/cache/apt \
     # Set default python, so that the Python virtualenv works as expected
     rm /usr/bin/python3 &&\
     ln -s /usr/bin/python3.10 /usr/bin/python3 &&\
-    # Create a fake system Python pointing at venv python
-    echo 'exec /opt/venv/bin/python3.10 "$@"' > /usr/bin/python &&\
+    # Create a fake system Python pointing at venv python, allows future redirection
+    # and simplifies vscode config as we can pretend we're just using system python
+    echo -e '#!/bin/bash\nexec /opt/venv/bin/python3.10 "$@"' > /usr/bin/python &&\
+    chmod +x /usr/bin/python &&\
     # Configure RStudio Server to run without auth
     echo "auth-none=1" >> /etc/rstudio/rserver.conf &&\
     echo "USER=rstudio" >> /etc/environment &&\

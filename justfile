@@ -8,4 +8,4 @@ build:
     docker build . -t research-template
 
 smoke-test:
-    docker run --rm research-template ls /opt/venv/bin/python3.10
+    docker run --rm research-template python --version
