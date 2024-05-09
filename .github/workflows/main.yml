@@ -3,6 +3,7 @@ name: CI
 
 env:
   IMAGE_NAME: research-template
+  IMAGE_VERSION: v0
   PUBLIC_IMAGE_NAME: ghcr.io/opensafely-core/research-template
   REGISTRY: ghcr.io
 
@@ -60,7 +61,7 @@ jobs:
       run: docker load --input /tmp/image/research-template.tar.gz
 
     - name: Tag Docker image for use with dev container
-      run: docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:v0
+      run: docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:$IMAGE_VERSION
 
     - name: Checkout research template temporary devcontainer dev branch
       uses: actions/checkout@v4
@@ -71,6 +72,13 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: 'research-template/research-template-docker'
+
+    - name: Check that we have correct version of image in devcontainer.json
+      # Slightly brittle because jq doesn't strip comments
+      # See https://github.com/jqlang/jq/issues/1571
+      run: |
+        devcontainer_image=$(grep -v "//" .devcontainer/devcontainer.json | jq --raw-output .image)
+        test "$devcontainer_image" = "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
 
     - name: Build and run dev container task
       uses: devcontainers/ci@v0.3
@@ -106,7 +114,7 @@ jobs:
       - name: Publish image
         run: |
             echo ${{ secrets.GITHUB_TOKEN }} | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
-            docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:v0
+            docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:$IMAGE_VERSION
             docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:latest
-            docker push $PUBLIC_IMAGE_NAME:v0
+            docker push $PUBLIC_IMAGE_NAME:$IMAGE_VERSION
             docker push $PUBLIC_IMAGE_NAME:latest
