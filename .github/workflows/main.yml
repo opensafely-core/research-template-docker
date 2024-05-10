@@ -11,6 +11,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    - cron: "0 12 * * SUN"
 
 jobs:
   build-and-test:
