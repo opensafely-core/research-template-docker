@@ -27,8 +27,6 @@ RUN --mount=type=cache,target=/var/cache/apt \
     # Configure RStudio Server to run without auth
     echo "auth-none=1" >> /etc/rstudio/rserver.conf &&\
     echo "USER=rstudio" >> /etc/environment &&\
-    # Remove the packages shipped with the rocker image
-    rm -rf /usr/library/lib/R/site-library/* &&\
     # Give the local user sudo (aka root) permissions
     usermod -aG sudo rstudio &&\
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
