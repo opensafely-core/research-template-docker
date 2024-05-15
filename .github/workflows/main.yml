@@ -61,7 +61,7 @@ jobs:
       run: docker load --input /tmp/image/research-template.tar.gz
 
     - name: Tag Docker image for use with dev container
-      run: docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:$IMAGE_VERSION
+      run: docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
 
     - name: Checkout research template temporary devcontainer dev branch
       uses: actions/checkout@v4
@@ -73,11 +73,16 @@ jobs:
       with:
         path: 'research-template/research-template-docker'
 
-    - name: Check that we have correct version of image in devcontainer.json
-      # Slightly brittle because jq doesn't strip comments
+    - name: Install demjson package for jsonlint
+      # Necessary because jq doesn't yet have an option to strip comments.
       # See https://github.com/jqlang/jq/issues/1571
       run: |
-        devcontainer_image=$(grep -v "//" .devcontainer/devcontainer.json | jq --raw-output .image)
+        sudo apt-get update
+        sudo apt-get install python3-demjson
+
+    - name: Check that we have correct version of image in devcontainer.json
+      run: |
+        devcontainer_image=$(jsonlint --allow comments --format-compactly ".devcontainer/devcontainer.json" | jq --raw-output .image)
         test "$devcontainer_image" = "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
 
     - name: Build and run dev container task
