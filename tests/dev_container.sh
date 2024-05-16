@@ -43,9 +43,9 @@ r_packages_extra_to_local_install=$(comm -13 <(echo "$r_docker_packages") <(echo
 python_image_version='v2'
 opensafely pull "python:$python_image_version"
 
-docker_python_packages=$(docker run "ghcr.io/opensafely-core/python:$python_image_version" python -m pip freeze)
-local_python_packages=$(/opt/venv/bin/python3.10 -m pip freeze)
-diff <(echo "$local_python_packages") <(echo "$docker_python_packages")
+python_docker_packages=$(docker run "ghcr.io/opensafely-core/python:$python_image_version" python -m pip freeze)
+python_installed_packages=$(/opt/venv/bin/python3.10 -m pip freeze)
+diff <(echo "$python_docker_packages") <(echo "$python_installed_packages")
 
 # Check the RStudio server is running.
 curl -L 'http://localhost:8787' | grep 'RStudio'
