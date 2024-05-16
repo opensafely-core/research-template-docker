@@ -90,8 +90,54 @@ jobs:
       with:
         runCmd: ./research-template/research-template-docker/tests/dev_container.sh
 
+  test-codespaces:
+    needs: [build-and-test]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Docker image
+      uses: actions/download-artifact@v4
+      with:
+        name: research-template-image
+        path: /tmp/image
+
+    - name: Import Docker image
+      run: docker load --input /tmp/image/research-template.tar.gz
+
+    - name: Tag Docker image for use with dev container
+      run: docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Try to run codespace
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Create a codespace with a known name.
+        codespace_basename="research-template-docker-test-"
+        codespace_start_time=$(date -u +%Y%m%d-%H%M%S%3N)
+        codespace_name="$codespace_basename"-"$codespace_start_time"
+
+        echo "CODESPACE_NAME=$codespace_name" >> "$GITHUB_ENV"
+
+        gh codespace create --display-name research-template-docker-test-"$start_time" --machine "basicLinux32gb" --idle-timeout 5m --retention-period 1m --status --repo "opensafely/research-template" --branch "steve/ssh-testing"
+
+        # Get the test into the codespace.
+        gh codespace cp --recursive './tests/' '/tmp/tests/'
+
+        # Run the test.
+        gh codespace ssh --codespace "$codespace_name" "cd /tmp/tests && ./dev_container.sh"
+
+    - name: Stop the codespace
+      if: always()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run:
+        gh codespace stop --codespace "$CODESPACE_NAME"
+
   publish:
-    needs: [build-and-test, test-devcontainer]
+    needs: [build-and-test, test-devcontainer, test-codespaces]
 
     runs-on: ubuntu-latest
 
