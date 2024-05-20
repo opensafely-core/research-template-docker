@@ -24,6 +24,8 @@ RUN --mount=type=cache,target=/var/cache/apt \
     ln -s /usr/bin/python3.10 /usr/bin/python3 &&\
     # Create a fake system Python pointing at venv python
     echo 'exec /opt/venv/bin/python3.10 "$@"' > /usr/bin/python &&\
+    # Activate the venv in every terminal
+    echo "source /opt/venv/bin/activate" >> /home/rstudio/.bashrc &&\
     # Configure RStudio Server to run without auth
     echo "auth-none=1" >> /etc/rstudio/rserver.conf &&\
     echo "USER=rstudio" >> /etc/environment &&\
