@@ -63,7 +63,7 @@ jobs:
     - name: Tag Docker image for use with dev container
       run: docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
 
-    - name: Checkout research template temporary devcontainer dev branch
+    - name: Checkout research template repository
       uses: actions/checkout@v4
       with:
         repository: opensafely/research-template
