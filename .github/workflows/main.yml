@@ -88,7 +88,7 @@ jobs:
     # It is necessary to run these tests in the dev container,
     # because they currently require Docker to correctly discover
     # the state of the Python packages in the Python action image.
-    - name: Build and run dev container task
+    - name: Build and run dev container test task
       uses: devcontainers/ci@a56d055efecd725e8cfe370543b6071b79989cc8 # v0.3.1900000349
       with:
         runCmd: ./research-template/research-template-docker/tests/packages.sh
