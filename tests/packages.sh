@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euxo pipefail
 
+# These checks assume that the packages do not change
+# between building the Docker image in this repository,
+# and checking the packages against the OpenSAFELY R and Python images.
+
 # Check that the R packages in the OpenSAFELY R image are available in the dev container.
 # The R setup we have leads to two sources of packages.
 # As a result, this only compares package names;
