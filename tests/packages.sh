@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euxo pipefail
 
+# This test requires:
+# * Docker
+# * the availability of the research-template Docker image
+research_template_image="research-template"
+docker image inspect "$research_template_image" > /dev/null
+
 # These checks assume that the packages do not change
 # between building the Docker image in this repository,
 # and checking the packages against the OpenSAFELY R and Python images.
@@ -30,7 +36,7 @@ extract_quoted_package_names_from_csv() {
 
 r_docker_packages=$(curl 'https://raw.githubusercontent.com/opensafely-core/r-docker/main/packages.csv' |
     extract_quoted_package_names_from_csv)
-r_installed_packages=$(Rscript -e 'write.csv(installed.packages()[, c("Package", "Version")], row.names = FALSE)' |
+r_installed_packages=$(docker run -i "$research_template_image" /bin/bash -c "Rscript -e 'write.csv(installed.packages()[, c(\"Package\", \"Version\")], row.names = FALSE)'" |
     extract_quoted_package_names_from_csv)
 r_packages_extra_to_local_install=$(comm -13 <(echo "$r_docker_packages") <(echo "$r_installed_packages"))
 
@@ -44,5 +50,5 @@ python_image="ghcr.io/opensafely-core/python:$python_image_version"
 docker pull "$python_image"
 
 python_docker_packages=$(docker run "$python_image" python -m pip freeze)
-python_installed_packages=$(/opt/venv/bin/python3.10 -m pip freeze)
+python_installed_packages=$(docker run "$research_template_image" /opt/venv/bin/python3.10 -m pip freeze)
 diff <(echo "$python_docker_packages") <(echo "$python_installed_packages")
