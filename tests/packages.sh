@@ -35,8 +35,10 @@ r_packages_extra_to_local_install=$(comm -13 <(echo "$r_docker_packages") <(echo
 # Check that the Python packages in the OpenSAFELY Python image are available in the dev container.
 # This checks package names and versions.
 python_image_version='v2'
-opensafely pull "python:$python_image_version"
+python_image="ghcr.io/opensafely-core/python:$python_image_version"
 
-python_docker_packages=$(docker run "ghcr.io/opensafely-core/python:$python_image_version" python -m pip freeze)
+docker pull "$python_image"
+
+python_docker_packages=$(docker run "$python_image" python -m pip freeze)
 python_installed_packages=$(/opt/venv/bin/python3.10 -m pip freeze)
 diff <(echo "$python_docker_packages") <(echo "$python_installed_packages")
