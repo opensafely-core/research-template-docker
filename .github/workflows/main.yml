@@ -60,8 +60,8 @@ jobs:
     - name: Import Docker image
       run: docker load --input /tmp/image/research-template.tar.gz
 
-    - name: Tag Docker image for use with dev container
-      run: docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
+    - name: Tag Docker image for testing
+      run: docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:dev"
 
     - name: Checkout research template repository
       uses: actions/checkout@v4
@@ -80,10 +80,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install python3-demjson
 
-    - name: Check that we have correct version of image in devcontainer.json
+    - name: Amend research-template devcontainer.json to use dev image
       run: |
-        devcontainer_image=$(jsonlint --allow comments --format-compactly ".devcontainer/devcontainer.json" | jq --raw-output .image)
-        test "$devcontainer_image" = "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
+        # Necessary because jq doesn't give the option to write to a file.
+        # See https://github.com/jqlang/jq/issues/2418
+        cleaned_json=$(jsonlint --allow comments --format-compactly ".devcontainer/devcontainer.json" |
+          jq --arg variable "$PUBLIC_IMAGE_NAME:dev" '.image |= $variable')
+        echo "$cleaned_json" > ".devcontainer/devcontainer.json"
 
     # It is necessary to run these tests in the dev container,
     # because they currently require Docker to correctly discover
