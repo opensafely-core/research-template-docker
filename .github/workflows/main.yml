@@ -31,8 +31,8 @@ jobs:
       - name: Build docker image
         run: just build
 
-      - name: Test docker image
-        run: just smoke-test
+      - name: Smoke test docker image
+        run: just test-smoke
 
       - name: Save docker image
         run: |
@@ -72,7 +72,7 @@ jobs:
       run: docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:dev"
 
     - name: Check packages
-      run: just packages-test
+      run: just test-packages
 
   publish:
     needs: [build-and-test, test-packages]

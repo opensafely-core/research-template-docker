@@ -7,8 +7,8 @@ default:
 build:
     docker build . -t research-template
 
-smoke-test:
+test-smoke:
     docker run --rm research-template ls /opt/venv/bin/python3.10
 
-packages-test:
+test-packages:
     tests/packages.sh
