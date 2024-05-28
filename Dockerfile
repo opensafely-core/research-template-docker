@@ -26,6 +26,8 @@ RUN --mount=type=cache,target=/var/cache/apt \
     echo 'exec /opt/venv/bin/python3.10 "$@"' > /usr/bin/python &&\
     # Activate the venv in every terminal
     echo "source /opt/venv/bin/activate" >> /home/rstudio/.bashrc &&\
+    # Print the MOTD/help text in every shell
+    echo "cat /etc/motd" >> /home/rstudio/.bashrc &&\
     # Configure RStudio Server to run without auth
     echo "auth-none=1" >> /etc/rstudio/rserver.conf &&\
     echo "USER=rstudio" >> /etc/environment &&\
@@ -46,6 +48,9 @@ COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/python:v2 /opt/venv 
 # as expected when a reference is made to an external image.
 # hadolint ignore=DL3022
 COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:latest /renv/lib/R-4.0/x86_64-pc-linux-gnu/ /usr/local/lib/R/site-library
+
+# copy in the MOTD file containing the required help text
+COPY motd /etc/motd
 
 # Required for installing opensafely cli
 ENV PATH="/home/rstudio/.local/bin:${PATH}"

@@ -1,0 +1,10 @@
+This is an OpenSAFELY Codespace
+
+All 'opensafely' commands (e.g 'opensafely run', 'opensafely exec') are availble
+in this terminal.
+
+The latest version of ehrQL has been installed, and the Python and R libraries installed
+here are the same as those available in the corresponding OpenSAFELY actions.
+
+Additional help is available in the #opensafely-users Slack channel and at
+https://docs.opensafely.org/getting-started/how-to/use-github-codespaces-in-your-project/
