@@ -12,3 +12,6 @@ test-smoke:
 
 test-packages:
     tests/packages.sh
+
+test-rstudio:
+    docker run -i --entrypoint /bin/bash research-template < ./tests/r_studio.sh

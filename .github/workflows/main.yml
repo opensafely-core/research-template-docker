@@ -46,7 +46,7 @@ jobs:
             # Disable compression; the file is already compressed
             compression-level: 0
 
-  test-packages:
+  test-docker-image:
     needs: [build-and-test]
     runs-on: ubuntu-latest
 
@@ -74,8 +74,11 @@ jobs:
     - name: Check packages
       run: just test-packages
 
+    - name: Check R Studio installation
+      run: just test-rstudio
+
   publish:
-    needs: [build-and-test, test-packages]
+    needs: [build-and-test, test-docker-image]
 
     runs-on: ubuntu-latest
 
