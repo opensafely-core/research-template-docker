@@ -68,9 +68,6 @@ jobs:
     - name: Import Docker image
       run: docker load --input /tmp/image/research-template.tar.gz
 
-    - name: Tag Docker image for testing
-      run: docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:dev"
-
     - name: Check packages
       run: just test-packages
 
