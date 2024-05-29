@@ -66,7 +66,7 @@ jobs:
         path: /tmp/image
 
     - name: Import Docker image
-      run: docker load --input /tmp/image/research-template.tar.gz
+      run: docker image load --input /tmp/image/research-template.tar.gz
 
     - name: Check packages
       run: just test-packages
@@ -98,7 +98,7 @@ jobs:
             path: /tmp/image
 
       - name: Import docker image
-        run: docker load --input /tmp/image/research-template.tar.gz
+        run: docker image load --input /tmp/image/research-template.tar.gz
 
       - name: Publish image
         run: |
