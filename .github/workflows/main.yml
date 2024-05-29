@@ -69,7 +69,7 @@ jobs:
       run: just test-python-install
 
     - name: Test R Studio installation
-      run: just test-rstudio
+      run: just test-rstudio-install
 
     - name: Test packages
       run: just test-packages

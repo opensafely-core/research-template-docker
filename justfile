@@ -17,5 +17,5 @@ test-packages: check-image-exists
 test-python-install: check-image-exists
     docker run -i --entrypoint /bin/bash research-template < ./tests/python.sh
 
-test-rstudio: check-image-exists
+test-rstudio-install: check-image-exists
     docker run -i --entrypoint /bin/bash research-template < ./tests/r_studio.sh
