@@ -16,7 +16,7 @@ on:
     - cron: "0 12 * * SUN"
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,9 +31,6 @@ jobs:
       - name: Build docker image
         run: just build
 
-      - name: Smoke test docker image
-        run: just test-smoke
-
       - name: Save docker image
         run: |
           docker save research-template | pigz --fast > /tmp/research-template.tar.gz
@@ -47,7 +44,7 @@ jobs:
             compression-level: 0
 
   test-docker-image:
-    needs: [build-and-test]
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -68,14 +65,17 @@ jobs:
     - name: Import Docker image
       run: docker image load --input /tmp/image/research-template.tar.gz
 
-    - name: Test packages
-      run: just test-packages
+    - name: Test Python installation
+      run: just test-python-install
 
     - name: Test R Studio installation
       run: just test-rstudio
 
+    - name: Test packages
+      run: just test-packages
+
   publish:
-    needs: [build-and-test, test-docker-image]
+    needs: [build, test-docker-image]
 
     runs-on: ubuntu-latest
 
