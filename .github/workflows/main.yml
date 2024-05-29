@@ -3,6 +3,7 @@ name: CI
 
 env:
   IMAGE_NAME: research-template
+  IMAGE_VERSION: v0
   PUBLIC_IMAGE_NAME: ghcr.io/opensafely-core/research-template
   REGISTRY: ghcr.io
 
@@ -15,7 +16,7 @@ on:
     - cron: "0 12 * * SUN"
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,23 +31,53 @@ jobs:
       - name: Build docker image
         run: just build
 
-      - name: Test docker image
-        run: just smoke-test
-
       - name: Save docker image
         run: |
-          docker save research-template | gzip > /tmp/research-template.tar.gz
+          docker save research-template | pigz --fast > /tmp/research-template.tar.gz
 
       - name: Upload docker image
         uses: actions/upload-artifact@v4
         with:
             name: research-template-image
             path: /tmp/research-template.tar.gz
+            # Disable compression; the file is already compressed
+            compression-level: 0
+
+  test-docker-image:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install just
+      uses: "opensafely-core/setup-action@v1"
+      with:
+        install-just: true
+
+    - name: Download Docker image
+      uses: actions/download-artifact@v4
+      with:
+        name: research-template-image
+        path: /tmp/image
+
+    - name: Import Docker image
+      run: docker image load --input /tmp/image/research-template.tar.gz
+
+    - name: Test Python installation
+      run: just test-python-install
+
+    - name: Test R Studio installation
+      run: just test-rstudio-install
+
+    - name: Test packages
+      run: just test-packages
 
   publish:
-    needs: [build-and-test]
+    needs: [build, test-docker-image]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     permissions:
       contents: read
@@ -67,12 +98,12 @@ jobs:
             path: /tmp/image
 
       - name: Import docker image
-        run: gunzip -c /tmp/image/research-template.tar.gz | docker load
+        run: docker image load --input /tmp/image/research-template.tar.gz
 
       - name: Publish image
         run: |
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
-            docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:v0
-            docker tag $IMAGE_NAME $PUBLIC_IMAGE_NAME:latest
-            docker push $PUBLIC_IMAGE_NAME:v0
-            docker push $PUBLIC_IMAGE_NAME:latest
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login "$REGISTRY" -u ${{ github.actor }} --password-stdin
+            docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
+            docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:latest"
+            docker push "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
+            docker push "$PUBLIC_IMAGE_NAME:latest"
