@@ -68,10 +68,10 @@ jobs:
     - name: Import Docker image
       run: docker image load --input /tmp/image/research-template.tar.gz
 
-    - name: Check packages
+    - name: Test packages
       run: just test-packages
 
-    - name: Check R Studio installation
+    - name: Test R Studio installation
       run: just test-rstudio
 
   publish:

@@ -1,4 +1,4 @@
-name: Check research template dev container functions
+name: Test research template dev container
 
 on:
   schedule:
@@ -18,8 +18,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: 'research-template/research-template-docker'
-  
-      - name: Build and run dev container task
+
+      - name: Test dev container
         uses: devcontainers/ci@a56d055efecd725e8cfe370543b6071b79989cc8 # v0.3.1900000349
         with:
           runCmd: ./research-template/research-template-docker/tests/dev_container.sh
