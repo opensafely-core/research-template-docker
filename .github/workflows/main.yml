@@ -98,7 +98,7 @@ jobs:
             path: /tmp/image
 
       - name: Import docker image
-        run: docker image load --input /tmp/image/research-template.tar.gz
+        run: docker image load --input /tmp/image/research-template.tar.zst
 
       - name: Publish image
         run: |
