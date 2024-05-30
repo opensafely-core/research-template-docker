@@ -33,13 +33,13 @@ jobs:
 
       - name: Save docker image
         run: |
-          docker image save research-template | pigz --fast > /tmp/research-template.tar.gz
+          docker image save research-template | zstd --fast -o /tmp/research-template.tar.zst
 
       - name: Upload docker image
         uses: actions/upload-artifact@v4
         with:
             name: research-template-image
-            path: /tmp/research-template.tar.gz
+            path: /tmp/research-template.tar.zst
             # Disable compression; the file is already compressed
             compression-level: 0
 
@@ -63,7 +63,7 @@ jobs:
         path: /tmp/image
 
     - name: Import Docker image
-      run: docker image load --input /tmp/image/research-template.tar.gz
+      run: docker image load --input /tmp/image/research-template.tar.zst
 
     - name: Test Python installation
       run: just test-python-install
