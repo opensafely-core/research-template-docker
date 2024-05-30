@@ -33,7 +33,7 @@ jobs:
 
       - name: Save docker image
         run: |
-          docker save research-template | pigz --fast > /tmp/research-template.tar.gz
+          docker image save research-template | pigz --fast > /tmp/research-template.tar.gz
 
       - name: Upload docker image
         uses: actions/upload-artifact@v4
