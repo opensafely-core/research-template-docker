@@ -1,3 +1,11 @@
+# This workflow tests that the dev container configuration within
+# opensafely/research-template is correct with respect to the tests within
+# `tests/dev_container.sh`. Notice that the dev container configuration lives in a
+# different repository. This is because opensafely/research-template is a template
+# repository; its contents are copied to multiple other repositories. Rather than test
+# the dev container configuration in each of these multiple other repositories, we test
+# it here, and assume that the copies don't deviate from the template repository. Doing
+# so reduces the cost of updating the tests.
 name: Test research template dev container
 
 on:
