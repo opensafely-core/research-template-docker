@@ -7,8 +7,9 @@ LABEL org.opencontainers.image.source https://github.com/opensafely/research-tem
 RUN rm -f /etc/apt/apt.conf.d/docker-clean
 
 # DL3008, DL3042: we always want latest package versions when we rebuild
+# DL3009: we are caching apt
 # DL3013: using an apt cache on the host instead
-# hadolint ignore=DL3008,DL3042,DL3013
+# hadolint ignore=DL3008,DL3009,DL3042,DL3013
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN --mount=type=cache,target=/var/cache/apt \
     echo "deb http://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu focal main" > /etc/apt/sources.list.d/deadsnakes-ppa.list &&\
