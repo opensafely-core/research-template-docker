@@ -15,9 +15,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     echo "deb http://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu focal main" > /etc/apt/sources.list.d/deadsnakes-ppa.list &&\
     /usr/lib/apt/apt-helper download-file 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf23c5a6cf475977595c89f51ba6932366a755776' /etc/apt/trusted.gpg.d/deadsnakes.asc &&\
     apt-get update &&\
-    # Install python 3.10. This is the version used by the python-docker 
+    apt-get install -y \
+    # Install python 3.10. This is the version used by the python-docker
     # image, used for analyses using the OpenSAFELY pipeline.
-    apt-get install -y --no-install-recommends curl python3.10 python3.10-distutils python3.10-venv &&\
+    --no-install-recommends curl python3.10 python3.10-distutils python3.10-venv \
+    # Install dependency for R tidyverse package.
+    libxml2 &&\
     # Pip for Python 3.10 isn't included in deadsnakes, so install separately
     curl https://bootstrap.pypa.io/get-pip.py | python3.10 &&\
     # Set default python, so that the Python virtualenv works as expected
