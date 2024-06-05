@@ -1,6 +1,6 @@
 FROM rocker/rstudio:4.0.5
 
-LABEL org.opencontainers.image.source https://github.com/opensafely/research-template
+LABEL org.opencontainers.image.source https://github.com/opensafely-core/research-template-docker
 
 # we are going to use an apt cache on the host, so disable the default debian
 # docker clean up that deletes that cache on every apt install
