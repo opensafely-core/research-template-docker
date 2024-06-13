@@ -16,6 +16,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     /usr/lib/apt/apt-helper download-file 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf23c5a6cf475977595c89f51ba6932366a755776' /etc/apt/trusted.gpg.d/deadsnakes.asc &&\
     apt-get update &&\
     apt-get install -y \
+    # Install a command-line editor for working with Git.
+    nano \
     # Install python 3.10. This is the version used by the python-docker
     # image, used for analyses using the OpenSAFELY pipeline.
     --no-install-recommends curl python3.10 python3.10-distutils python3.10-venv \
@@ -56,7 +58,10 @@ COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:latest /renv/lib/R
 # copy in the MOTD file containing the required help text
 COPY motd /etc/motd
 
-# Required for installing opensafely cli
-ENV PATH="/home/rstudio/.local/bin:${PATH}"
+ENV \
+    # Required for installing opensafely cli
+    PATH="/home/rstudio/.local/bin:${PATH}" \
+    # Required to make Git features such as rebasing work.
+    EDITOR="nano"
 
 USER rstudio
