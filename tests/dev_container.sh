@@ -4,6 +4,10 @@ set -euxo pipefail
 # Check the OpenSAFELY research-template example runs.
 opensafely run run_all
 
+# Check that a default text editor is installed.
+# We currently use nano which has the `--version` flag.
+editor --version
+
 # Check the RStudio server is running.
 curl -L 'http://localhost:8787' | grep 'RStudio'
 
