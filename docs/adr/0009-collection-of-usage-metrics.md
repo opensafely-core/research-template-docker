@@ -44,4 +44,4 @@ We will miss codespaces that are created after 9am and are deleted before 9am th
 
 We will not know what opensafely-cli commands are being used by users, but this sort of telemetry is arguably orthogonal from usage of Codespaces.
 
-We believe this data processing is legitimate and our users would not be surprised to find out of its existence.
+We believe this data processing is legitimate and our users would not be surprised to find out about its existence.
