@@ -1,6 +1,11 @@
 FROM rocker/rstudio:4.0.5
 
-LABEL org.opencontainers.image.source https://github.com/opensafely-core/research-template-docker
+LABEL org.opencontainers.image.title="Research Template" \
+      org.opencontainers.image.description="Dev container image for the OpenSAFELY research template" \
+      org.opencontainers.image.source="https://github.com/opensafely-core/research-template-docker" \
+      org.opencontainers.image.licenses="GPL-3.0-or-later" \
+      org.opencontainers.image.authors="OpenSAFELY Team <team@opensafely.org>" \
+      org.opencontainers.image.vendor="OpenSAFELY"
 
 # we are going to use an apt cache on the host, so disable the default debian
 # docker clean up that deletes that cache on every apt install
@@ -63,5 +68,13 @@ ENV \
     PATH="/home/rstudio/.local/bin:${PATH}" \
     # Required to make Git features such as rebasing work.
     EDITOR="nano"
+
+# The following build details will change.
+# These are the last step to make better use of Docker's build cache,
+# avoiding rebuilding image layers unnecessarily.
+ARG BUILD_DATE=unknown
+LABEL org.opencontainers.image.created=$BUILD_DATE
+ARG GITREF=unknown
+LABEL org.opencontainers.image.revision=$GITREF
 
 USER rstudio
