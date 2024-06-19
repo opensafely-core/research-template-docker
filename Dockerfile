@@ -63,6 +63,11 @@ COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:latest /renv/lib/R
 # copy in the MOTD file containing the required help text
 COPY motd /etc/motd
 
+# Copy in auxiliary dev container files.
+# These reside in this repository
+# to minimise the dev container configuration in the research-template repository.
+COPY devcontainer/ /opt/devcontainer/
+
 ENV \
     # Required for installing opensafely cli
     PATH="/home/rstudio/.local/bin:${PATH}" \
