@@ -1,0 +1,60 @@
+# This workflow tests that the dev container configuration within
+# opensafely/research-template is correct with respect to the tests within
+# `tests/dev_container.sh`. Notice that the dev container configuration lives in a
+# different repository. This is because opensafely/research-template is a template
+# repository; its contents are copied to multiple other repositories. Rather than test
+# the dev container configuration in each of these multiple other repositories, we test
+# it here, and assume that the copies don't deviate from the template repository. Doing
+# so reduces the cost of updating the tests.
+#
+# This workflow is specifically for testing changes in the Docker build
+# that affect the dev container, before merging them.
+name: Test research template dev container for QA purposes
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dev-container-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout research-template repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'opensafely/research-template'
+
+      - name: Checkout research-template-docker repository in subdirectory
+        uses: actions/checkout@v4
+        with:
+          path: 'research-template/research-template-docker'
+
+      - name: Install just
+        uses: "opensafely-core/setup-action@v1"
+        with:
+          install-just: true
+
+      - name: Build Docker image
+        run: just research-template/research-template-docker/build
+
+      - name: Tag Docker image
+        run: docker tag 'research-template' 'research-template:dev'
+
+      - name: Install demjson package for jsonlint
+        # Necessary because jq doesn't yet have an option to strip comments.
+        # See https://github.com/jqlang/jq/issues/1571
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3-demjson
+
+      - name: Amend dev container configuration to use the locally built Docker image
+        run: |
+          echo "Updating devcontainer.json…"
+          devcontainer_json="$(jsonlint --allow comments --format-compactly '.devcontainer/devcontainer.json' | jq '.image = "research-template:dev"')"
+          echo "$devcontainer_json" > '.devcontainer/devcontainer.json'
+          echo "Updated devcontainer.json to:"
+          jq . '.devcontainer/devcontainer.json'
+
+      - name: Test dev container
+        uses: devcontainers/ci@a56d055efecd725e8cfe370543b6071b79989cc8 # v0.3.1900000349
+        with:
+          runCmd: ./research-template/research-template-docker/tests/dev_container.sh
