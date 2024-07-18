@@ -18,6 +18,10 @@ set_rstudio_pref() {
 #set RStudio working directory
 set_rstudio_pref "initial_working_directory" "\"$1\""
 
+#turn on RStudio autosave
+set_rstudio_pref "auto_save_on_blur" "true"
+set_rstudio_pref "auto_save_on_idle" "\"commit\""
+
 #download and extract latest ehrql source
 wget https://github.com/opensafely-core/ehrql/archive/main.zip -P .devcontainer
 unzip -o .devcontainer/main.zip -d .devcontainer/
