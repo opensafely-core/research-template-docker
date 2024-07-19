@@ -21,10 +21,10 @@ test-packages: check-image-exists
     tests/packages.sh
 
 test-python-install: check-image-exists
-    docker run -i --entrypoint /bin/bash research-template < ./tests/python.sh
+    docker run -i --rm --entrypoint /bin/bash research-template < ./tests/python.sh
 
 test-rstudio-install: check-image-exists
-    docker run -i --entrypoint /bin/bash research-template < ./tests/r_studio.sh
+    docker run -i --rm --entrypoint /bin/bash research-template < ./tests/r_studio.sh
 
 test-postcreate-script: check-image-exists
-    docker run -i --entrypoint /bin/bash research-template < ./tests/postCreate.sh
+    docker run -i --rm --entrypoint /bin/bash research-template < ./tests/postCreate.sh
