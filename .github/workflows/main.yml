@@ -74,6 +74,9 @@ jobs:
     - name: Test packages
       run: just test-packages
 
+    - name: Test postCreate script
+      run: just test-postcreate-script
+
   publish:
     needs: [build, test-docker-image]
 
