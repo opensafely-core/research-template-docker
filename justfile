@@ -25,3 +25,6 @@ test-python-install: check-image-exists
 
 test-rstudio-install: check-image-exists
     docker run -i --entrypoint /bin/bash research-template < ./tests/r_studio.sh
+
+test-postcreate-script: check-image-exists
+    docker run -i --entrypoint /bin/bash research-template < ./tests/postCreate.sh
