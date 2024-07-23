@@ -16,8 +16,11 @@ opensafely --version
 # check R working directory
 [ "$(Rscript -e 'getwd()')" == '[1] "/tmp/testdir"' ]
 
-# check Rstudio working directory
+# check Rstudio preferences
 [ "$(jq '.initial_working_directory' < ~/.config/rstudio/rstudio-prefs.json )" == '"/tmp/testdir"' ]
+[ "$(jq '.auto_save_on_blur' < ~/.config/rstudio/rstudio-prefs.json )" == 'true' ]
+[ "$(jq '.auto_save_on_idle' < ~/.config/rstudio/rstudio-prefs.json )" == '"commit"' ]
+
 
 # check preexisting Rstudio preference
 [ "$(jq '.posix_terminal_shell' < ~/.config/rstudio/rstudio-prefs.json )" == '"bash"' ]
