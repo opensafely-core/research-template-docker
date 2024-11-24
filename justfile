@@ -15,7 +15,7 @@ build:
 
 check-image-exists:
     # Extra brackets are for Just escaping.
-    docker image inspect --format='{{{{.Id}}}}' research-template
+    docker image inspect --format='{{{{.Id}}' research-template
 
 test-packages: check-image-exists
     tests/packages.sh
