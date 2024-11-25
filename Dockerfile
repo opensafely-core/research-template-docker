@@ -26,8 +26,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     # Install python 3.10. This is the version used by the python-docker
     # image, used for analyses using the OpenSAFELY pipeline.
     --no-install-recommends curl python3.10 python3.10-distutils python3.10-venv \
-    # Install dependencies for R tidyverse, knitr, and dagitty packages.
-    libxml2 libmagick++-6.q16-8 libnode-dev &&\
+    # Install dependencies for R tidyverse, knitr, dagitty, units, sf, rgdal, rgeos, odbc, and tcltk packages.
+    libxml2 libmagick++-6.q16-8 libnode-dev libudunits2-0 libgdal26 libodbc1 libtk8.6 &&\
     # Pip for Python 3.10 isn't included in deadsnakes, so install separately
     curl https://bootstrap.pypa.io/get-pip.py | python3.10 &&\
     # Set default python, so that the Python virtualenv works as expected
