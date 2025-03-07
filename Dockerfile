@@ -58,7 +58,7 @@ COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/python:v2 /opt/venv 
 # DL3022: hadolint can't access a network and doesn't behave
 # as expected when a reference is made to an external image.
 # hadolint ignore=DL3022
-COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:latest /renv/lib/R-4.0/x86_64-pc-linux-gnu/ /usr/local/lib/R/site-library
+COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:v1 /renv/lib/R-4.0/x86_64-pc-linux-gnu/ /usr/local/lib/R/site-library
 
 # copy in the MOTD file containing the required help text
 COPY motd /etc/motd
