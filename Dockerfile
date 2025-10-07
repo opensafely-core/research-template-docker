@@ -25,16 +25,15 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     nano \
     # Install python 3.10. This is the version used by the python-docker
     # image, used for analyses using the OpenSAFELY pipeline.
-    --no-install-recommends curl python3.10 python3.10-distutils python3.10-venv \
+    --no-install-recommends curl software-properties-common ca-certificates gnupg lsb-release apt-transport-https dirmngr \
     # Install dependencies for R tidyverse, knitr, and dagitty packages.
     libxml2 libmagick++-6.q16-8 libnode-dev &&\
-    # Pip for Python 3.10 isn't included in deadsnakes, so install separately
-    curl https://bootstrap.pypa.io/get-pip.py | python3.10 &&\
-    # Set default python, so that the Python virtualenv works as expected
-    rm /usr/bin/python3 &&\
-    ln -s /usr/bin/python3.10 /usr/bin/python3 &&\
-    # Create a fake system Python pointing at venv python
-    echo 'exec /opt/venv/bin/python3.10 "$@"' > /usr/bin/python &&\
+    # expose the copied venv python as system python3 via alternatives
+    if [ -x /opt/venv/bin/python3.10 ]; then \
+      update-alternatives --install /usr/bin/python3 python3 /opt/venv/bin/python3.10 2 || true; \
+    fi; \
+    # make /usr/bin/python call the venv python
+    printf '%s\n' 'exec /opt/venv/bin/python3.10 "$@"' > /usr/bin/python; chmod +x /usr/bin/python; \
     # Activate the venv in every terminal
     echo "source /opt/venv/bin/activate" >> /home/rstudio/.bashrc &&\
     # Print the MOTD/help text in every shell
