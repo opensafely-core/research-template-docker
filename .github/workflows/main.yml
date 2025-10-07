@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5
       - uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5  # v3.3.0
@@ -45,7 +45,7 @@ jobs:
 
   test-docker-image:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
@@ -80,7 +80,7 @@ jobs:
   publish:
     needs: [build, test-docker-image]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     permissions:
       contents: read
@@ -114,7 +114,7 @@ jobs:
   notify-slack-on-scheduled-failures:
     needs: [build, test-docker-image, publish]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     if: ${{ !cancelled() && github.event_name == 'schedule' && contains(needs.*.result, 'failure') }}
 
