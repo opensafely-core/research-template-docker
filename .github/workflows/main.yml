@@ -57,7 +57,7 @@ jobs:
         install-just: true
 
     - name: Download Docker image
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: research-template-image
         path: /tmp/image
@@ -95,7 +95,7 @@ jobs:
           install-just: true
 
       - name: Download docker image
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
             name: research-template-image
             path: /tmp/image
