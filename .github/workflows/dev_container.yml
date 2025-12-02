@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout research-template repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: 'opensafely/research-template'
 
       - name: Checkout research-template-docker repository in subdirectory
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: 'research-template/research-template-docker'
 
