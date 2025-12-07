@@ -31,6 +31,11 @@ jobs:
       - name: Build docker image
         run: just build
 
+      # This is a workaround to reclaim disk space.
+      # Otherwise, the GitHub Actions runner can run out of space.
+      - name: Prune docker builder
+        run: docker builder prune --all --force
+  
       - name: Save docker image
         run: |
           docker image save research-template | zstd --fast -o /tmp/research-template.tar.zst
