@@ -41,7 +41,7 @@ jobs:
           docker image save research-template | zstd --fast -o /tmp/research-template.tar.zst
 
       - name: Upload docker image
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
             name: research-template-image
             path: /tmp/research-template.tar.zst
