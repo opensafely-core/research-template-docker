@@ -35,7 +35,7 @@ jobs:
       # Otherwise, the GitHub Actions runner can run out of space.
       - name: Prune docker builder
         run: docker builder prune --all --force
-  
+
       - name: Save docker image
         run: |
           docker image save research-template | zstd --fast -o /tmp/research-template.tar.zst
@@ -129,6 +129,6 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          channel_id: C069SADHP1Q
+          channel_id: C0A8AJA249K
           status: "Scheduled Research Template Docker image build or publish failure"
           color: danger
