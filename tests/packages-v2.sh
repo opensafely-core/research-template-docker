@@ -26,7 +26,7 @@ END
 )
 
 extract_quoted_package_names_from_json() {
-    jq '.Packages | keys[]' | sort -u
+    jq '.packages[].package' | sort -u
 }
 
 r_docker_packages=$(curl -s 'https://raw.githubusercontent.com/opensafely-core/r-docker/main/v2/pkg.lock' | extract_quoted_package_names_from_json)
