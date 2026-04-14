@@ -4,7 +4,7 @@ set -euxo pipefail
 # This test requires:
 # * Docker
 # * the availability of the research-template Docker image
-research_template_image="research-template"
+research_template_image="research-template-r-v2"
 docker image inspect "$research_template_image" > /dev/null
 
 # These checks assume that the packages do not change
@@ -29,7 +29,7 @@ extract_quoted_package_names_from_json() {
     jq '.Packages | keys[]' | sort -u
 }
 
-r_docker_packages=$(curl -s 'https://raw.githubusercontent.com/opensafely-core/r-docker/main/v1/renv.lock' | extract_quoted_package_names_from_json)
+r_docker_packages=$(curl -s 'https://raw.githubusercontent.com/opensafely-core/r-docker/main/v2/pkg.lock' | extract_quoted_package_names_from_json)
 
 r_script="
 t <- tempfile()

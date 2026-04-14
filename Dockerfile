@@ -1,3 +1,6 @@
+ARG R_IMAGE_VERSION=v1
+FROM ghcr.io/opensafely-core/r:${R_IMAGE_VERSION} AS r_site_lib
+
 FROM rocker/rstudio:4.0.5
 
 LABEL org.opencontainers.image.title="Research Template" \
@@ -66,12 +69,14 @@ RUN set -eux; \
 # hadolint ignore=DL3022
 COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/python:v2 /opt/venv /opt/venv
 
+ARG R_SITE_LIBRARY_SOURCE=/renv/lib/R-4.0/x86_64-pc-linux-gnu/
+
 # copy the renv directory into the local site library from the OpenSAFELY R action image
 #
 # DL3022: hadolint can't access a network and doesn't behave
 # as expected when a reference is made to an external image.
 # hadolint ignore=DL3022
-COPY --chown=rstudio:rstudio --from=ghcr.io/opensafely-core/r:v1 /renv/lib/R-4.0/x86_64-pc-linux-gnu/ /usr/local/lib/R/site-library
+COPY --chown=rstudio:rstudio --from=r_site_lib ${R_SITE_LIBRARY_SOURCE} /usr/local/lib/R/site-library
 
 # copy in the MOTD file containing the required help text
 COPY motd /etc/motd

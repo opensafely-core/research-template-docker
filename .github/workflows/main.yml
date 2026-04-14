@@ -38,16 +38,25 @@ jobs:
 
       - name: Save docker image
         run: |
-          docker image save research-template | zstd --fast -o /tmp/research-template.tar.zst
+          docker image save research-template-r-v1 | zstd --fast -o /tmp/research-template-r-v1.tar.zst
+          docker image save research-template-r-v2 | zstd --fast -o /tmp/research-template-r-v2.tar.zst
 
       - name: Upload docker image
         uses: actions/upload-artifact@v7
         with:
-            name: research-template-image
-            path: /tmp/research-template.tar.zst
+            name: research-template-r-v1
+            path: /tmp/research-template-r-v1.tar.zst
             # Disable compression; the file is already compressed
             compression-level: 0
 
+      - name: Upload docker image
+        uses: actions/upload-artifact@v7
+        with:
+            name: research-template-r-v2
+            path: /tmp/research-template-r-v2.tar.zst
+            # Disable compression; the file is already compressed
+            compression-level: 0
+            
   test-docker-image:
     needs: build
     runs-on: ubuntu-latest
@@ -64,71 +73,41 @@ jobs:
     - name: Download Docker image
       uses: actions/download-artifact@v8
       with:
-        name: research-template-image
+        name: research-template-r-v1
         path: /tmp/image
 
     - name: Import Docker image
-      run: docker image load --input /tmp/image/research-template.tar.zst
+      run: docker image load --input /tmp/image/research-template-r-v1.tar.zst
 
     - name: Test Python installation
-      run: just test-python-install
+      run: just test-python-install-v1
 
     - name: Test R Studio installation
-      run: just test-rstudio-install
+      run: just test-rstudio-install-v1
 
     - name: Test packages
-      run: just test-packages
+      run: just test-packages-v1
 
     - name: Test postCreate script
-      run: just test-postcreate-script
+      run: just test-postcreate-script-v1
 
-  publish:
-    needs: [build, test-docker-image]
+    - name: Download Docker image
+      uses: actions/download-artifact@v8
+      with:
+        name: research-template-r-v2
+        path: /tmp/image
 
-    runs-on: ubuntu-latest
+    - name: Import Docker image
+      run: docker image load --input /tmp/image/research-template-r-v2.tar.zst
 
-    permissions:
-      contents: read
-      packages: write
+    - name: Test Python installation
+      run: just test-python-install-v2
 
-    if: github.ref == 'refs/heads/main'
+    - name: Test R Studio installation
+      run: just test-rstudio-install-v2
 
-    steps:
-      - uses: actions/checkout@v6
-      - uses: "opensafely-core/setup-action@v1"
-        with:
-          install-just: true
+    - name: Test packages
+      run: just test-packages-v2
 
-      - name: Download docker image
-        uses: actions/download-artifact@v8
-        with:
-            name: research-template-image
-            path: /tmp/image
-
-      - name: Import docker image
-        run: docker image load --input /tmp/image/research-template.tar.zst
-
-      - name: Publish image
-        run: |
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login "$REGISTRY" -u ${{ github.actor }} --password-stdin
-            docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
-            docker tag "$IMAGE_NAME" "$PUBLIC_IMAGE_NAME:latest"
-            docker push "$PUBLIC_IMAGE_NAME:$IMAGE_VERSION"
-            docker push "$PUBLIC_IMAGE_NAME:latest"
-
-  notify-slack-on-scheduled-failures:
-    needs: [build, test-docker-image, publish]
-
-    runs-on: ubuntu-latest
-
-    if: ${{ !cancelled() && github.event_name == 'schedule' && contains(needs.*.result, 'failure') }}
-
-    steps:
-      - name: Notify Slack on failure
-        uses: zuplo/github-action-slack-notify-build@cf8e7e66a21d76a8125ea9648979c30920195552 # v2
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        with:
-          channel_id: C0A8AJA249K
-          status: "Scheduled Research Template Docker image build or publish failure"
-          color: danger
+    - name: Test postCreate script
+      run: just test-postcreate-script-v2
