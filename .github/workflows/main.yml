@@ -24,7 +24,7 @@ jobs:
         # Lint the dockerfile before building
         with:
           failure-threshold: error
-      - uses: "opensafely-core/setup-action@v1"
+      - uses: "opensafely-core/setup-action@v1.6.1"
         with:
           install-just: true
 
@@ -57,7 +57,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Install just
-      uses: "opensafely-core/setup-action@v1"
+      uses: "opensafely-core/setup-action@v1.6.1"
       with:
         install-just: true
 
@@ -95,7 +95,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - uses: "opensafely-core/setup-action@v1"
+      - uses: "opensafely-core/setup-action@v1.6.1"
         with:
           install-just: true
 
