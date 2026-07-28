@@ -1,4 +1,4 @@
-FROM rocker/rstudio:4.0.5
+FROM rocker/rstudio:4.0.5@sha256:0f3da9a4708fa208c3abe215aa77e3b96b7ebbf3b5e646c97539df53abc97a92
 
 LABEL org.opencontainers.image.title="Research Template" \
       org.opencontainers.image.description="Dev container image for the OpenSAFELY research template" \

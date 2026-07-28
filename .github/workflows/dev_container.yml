@@ -13,19 +13,24 @@ on:
     - cron: "18 8 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   dev-container:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout research-template repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 'opensafely/research-template'
+          persist-credentials: false
 
       - name: Checkout research-template-docker repository in subdirectory
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: 'research-template/research-template-docker'
+          persist-credentials: false
 
       - name: Test dev container
         uses: devcontainers/ci@513af61f4de4f75d37e4438f184ba4358f0fc1ca # v0.3.1900000450
