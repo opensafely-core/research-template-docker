@@ -21,3 +21,14 @@ updates:
       timezone: "Europe/London"
     cooldown:
       default-days: 7
+    # Versioning for rocker/rstudio is tied to the version of R.
+    # We do not want this version to change without us knowing:
+    # this R version is tied to that supplied in the OpenSAFELY R v1 image.
+    # We do want to see updates if there is an image update
+    # that does not change the R version.
+    ignore:
+      - dependency-name: "rocker/rstudio"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
