@@ -59,6 +59,12 @@ RUN set -eux; \
     usermod -aG sudo rstudio &&\
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+# Remove revoked certificates.
+RUN sed -i \
+  -e 's|^mozilla/emSign_ECC_Root_CA_-_G3.crt|!&|' \
+  -e 's|^mozilla/Comodo_AAA_Services_root.crt|!&|' \
+  /etc/ca-certificates.conf && update-ca-certificates
+
 # Copy the Python virtualenv from OpenSAFELY Python action image
 #
 # DL3022: hadolint can't access a network and doesn't behave
