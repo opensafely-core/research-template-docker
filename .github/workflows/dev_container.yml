@@ -20,6 +20,42 @@ jobs:
   dev-container:
     runs-on: ubuntu-22.04
     steps:
+      # This repository indicates which operating system is used in Codespaces.
+      - name: Checkout Codespaces host images repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: 'github/codespaces-host-images'
+          path: 'codespaces-host-images'
+          persist-credentials: false
+
+      # We do not run these tests in Codespaces (see #103).
+      # For better consistency, ensure that we use the same operating system
+      # in this test, as runs in Codespaces.
+      - name: Check Codespaces host OS matches GitHub Actions runner
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          codespaces_os=$(
+            sed -n '/^## Stable$/,$ { s/^\*\*Host OS\*\*: //p; }' codespaces-host-images/README.md | head -n 1
+          )
+
+          if [[ -z "$codespaces_os" ]]; then
+            echo "::error::Could not find \"Host OS\" text in Stable section of codespaces-host-images README.md"
+            exit 1
+          fi
+
+          codespaces_version=$(echo "$codespaces_os" | grep -oE '[0-9]+\.[0-9]+' | head -n 1)
+          runner_version=$(lsb_release -rs | cut -d. -f1,2)
+
+          echo "Codespaces Stable Ubuntu version: $codespaces_version"
+          echo "GitHub Actions Ubuntu version:    $runner_version"
+
+          if [[ "$codespaces_version" != "$runner_version" ]]; then
+            echo "::error::Codespaces Stable uses Ubuntu $codespaces_version, but GitHub Actions uses Ubuntu $runner_version"
+            exit 1
+          fi
+
       - name: Checkout research-template repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
