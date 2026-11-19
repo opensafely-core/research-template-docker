@@ -23,7 +23,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     nano \
     --no-install-recommends curl \
     # Install dependencies for R tidyverse, knitr, and dagitty packages.
-    libxml2 libmagick++-6.q16-8 libnode-dev
+    libxml2 libmagick++-6.q16-8 libnode-dev \
+    # We use jq to check RStudio preferences in postCreate.sh
+    jq
 
 ARG UV_PLATFORM=uv-x86_64-unknown-linux-gnu.tar.gz
 
