@@ -1,6 +1,20 @@
 #!/bin/bash
 set -euxo pipefail
 
+# Run Docker with minimum privileges.
+# A small tmpfs is needed for R to get the installed package list.
+docker_safe() {
+    docker run --rm \
+        --network none \
+        --read-only \
+        --cap-drop ALL \
+        --security-opt no-new-privileges:true \
+        --user 65534:65534 \
+        --env HOME=/tmp \
+        --tmpfs /tmp:rw,nosuid,nodev,noexec,size=64m,mode=1777 \
+        "$@"
+}
+
 # This test requires:
 # * Docker
 # * the availability of the research-template Docker image
@@ -41,14 +55,14 @@ sink()
 sink(type = 'message')
 cat(readLines(t))
 "
-r_installed_packages=$(docker run -i "$research_template_image" Rscript -e "$r_script" | extract_quoted_package_names_from_json)
+r_installed_packages=$(docker_safe -i "$research_template_image" Rscript -e "$r_script" | extract_quoted_package_names_from_json)
 
 r_packages_extra_to_local_install=$(comm -13 <(echo "$r_docker_packages") <(echo "$r_installed_packages") | awk NF | sort -u)
 
 if [ "$r_packages_extra_to_local_install" != "$r_installed_known_extra_packages" ]; then
     set +x
     echo "There are unexpected extra R packages installed:"
-    comm -13 <(echo "$r_installed_known_extra_packages") <(echo "$r_packages_extra_to_local_install") 
+    comm -13 <(echo "$r_installed_known_extra_packages") <(echo "$r_packages_extra_to_local_install")
     exit 1;
 fi
 
@@ -59,6 +73,6 @@ python_image="ghcr.io/opensafely-core/python:$python_image_version"
 
 docker pull "$python_image"
 
-python_docker_packages=$(docker run "$python_image" python -m pip freeze)
-python_installed_packages=$(docker run "$research_template_image" /opt/venv/bin/python3.10 -m pip freeze)
+python_docker_packages=$(docker_safe "$python_image" python -m pip freeze)
+python_installed_packages=$(docker_safe "$research_template_image" /opt/venv/bin/python3.10 -m pip freeze)
 diff <(echo "$python_docker_packages") <(echo "$python_installed_packages")
